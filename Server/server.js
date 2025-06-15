@@ -13,10 +13,14 @@ import { setIO, getUserSocketMap } from "./lib/socket.js";
 const app = express();
 const server = http.createServer(app);
 
-// ✅ CORS configuration
+// ✅ CORS configuration (use deployed in production, fallback to localhost in development)
+const allowedOrigin = process.env.NODE_ENV === "production" 
+  ? "https://chat-app-phi-six-70.vercel.app" 
+  : "http://localhost:5173";
+
 app.use(
   cors({ 
-    origin: "http://localhost:5173", 
+    origin: allowedOrigin, 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "token"],
@@ -33,7 +37,7 @@ app.use("/api/messages", messageRouter);
 // ✅ Set up socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigin,
     credentials: true,
   },
 });
